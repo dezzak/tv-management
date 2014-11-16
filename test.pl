@@ -83,7 +83,7 @@ foreach my $test_ref (@test_files) {
 	}
 
 	if ($pass) {
-		print '[PASS] ' . $test_ref->{filename}. "\n";
+		print '[PASS] ' . $test_ref->{filename} . ' -> ' . $given_dir . $given_filename . "\n";
 	}
 	else {
 		print Dumper($test_ref, $info);
