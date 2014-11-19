@@ -23,6 +23,10 @@ sub get_destination_directory_from_file {
 
     my $programme_info_ref = $self->get_programme_info($filename);
 
+    if ( ! defined($programme_info_ref)) {
+        return;
+    }
+
     my $destination_directory = $self->{config_ref}->{tv_base_directory};
 
     $destination_directory .= q{/} . $programme_info_ref->{programme_name};
