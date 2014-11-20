@@ -9,11 +9,10 @@ use File::Path qw(make_path);
 use File::Copy;
 use Carp;
 use English qw(-no_match_vars);
-
-use Data::Dumper;
+use Cwd;
 
 # @todo: Move these to a config file
-my $base_tv_dir = '/tmp/TV';
+my $base_tv_dir   = '/tmp/TV';
 my $unwatched_dir = '/tmp/unwatched';
 # End config
 
@@ -50,7 +49,7 @@ my $renamer = TV::Renamer->new({tv_base_directory => $base_tv_dir});
 verbose('Loaded Renamer module');
 
 my $target_directory = $renamer->get_destination_directory_from_file($filename);
-my $target_filename = $renamer->get_normalised_filename($filename);
+my $target_filename  = $renamer->get_normalised_filename($filename);
 my $target_full_path = $target_directory . $target_filename;
 
 if ( ! $target_directory || ! $target_filename) {
@@ -70,6 +69,11 @@ if ($move_file) {
 }
 elsif ($hardlink_file) {
 	do_hardlink($target_full_path, $full_filepath);
+}
+
+
+if ($add_to_unwatched) {
+	add_to_unwatched($target_full_path, $target_filename);
 }
 
 sub usage {
@@ -168,6 +172,31 @@ sub do_move {
 			$message .= 'Unable to move file to destination: '. $target_path;
 			croak($message);
 		}
+	}
+	return;
+}
+
+sub add_to_unwatched {
+	my ($new_filename, $link_filename) = @_;
+	verbose('Adding to unwatched');
+	# We need to try and make the symlink relative, so that it works properly
+	# regardless of mountpoint. hardlink might be better here, but the
+	# existing solution is a symlink one.
+	my $relative_path = File::Spec->abs2rel($new_filename, $unwatched_dir);
+	verbose('Calculated relative path as ' . $relative_path);
+
+	verbose('Creating symlink');
+	my $dir_sep = q{/};
+	my $symlink_filename = $unwatched_dir . $dir_sep . $link_filename;
+
+	my $result = symlink $relative_path, $symlink_filename;
+	if ($result) {
+		verbose('link created');
+	}
+	else {
+		my $message = $OS_ERROR . "\n";
+		$message .= 'Unable to create symlink: ' . $symlink_filename;
+		croak($message);
 	}
 	return;
 }
