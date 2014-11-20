@@ -9,7 +9,6 @@ use File::Path qw(make_path);
 use File::Copy;
 use Carp;
 use English qw(-no_match_vars);
-use Cwd;
 
 # @todo: Move these to a config file
 my $base_tv_dir   = '/tmp/TV';
