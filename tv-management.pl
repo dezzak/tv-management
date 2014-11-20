@@ -6,6 +6,9 @@ use TV::Renamer;
 use File::Spec;
 use File::Basename;
 use File::Path qw(make_path);
+use File::Copy;
+use Carp;
+use English qw(-no_match_vars);
 
 use Data::Dumper;
 
@@ -51,8 +54,7 @@ my $target_filename = $renamer->get_normalised_filename($filename);
 my $target_full_path = $target_directory . $target_filename;
 
 if ( ! $target_directory || ! $target_filename) {
-	print STDERR 'Unable to get TV information for ' .$filename . "\n";
-	exit;
+	croak('Unable to get TV information for ' .$filename);
 }
 
 verbose('Target directory: ' . $target_directory);
@@ -64,39 +66,10 @@ make_path($target_directory);
 
 # What do we want to do?
 if ($move_file) {
-	verbose('Starting move file logic');
+	do_move($target_full_path, $full_filepath);
 }
 elsif ($hardlink_file) {
-	verbose('Starting hardlink file logic');
-	# See if the file already exists
-	if ( -e $target_full_path) {
-		# The file already exists, but don't panic yet, it might be the same
-		#  inode in which case we don't have to do anything
-		if ((stat $target_full_path)[1] == (stat $full_filepath)[1]) {
-			# Same inode
-			verbose('Files are already the same inode - no moving to do');
-		}
-		else {
-			my $message = 'A file already exists at the target location: ';
-			$message .= $target_full_path . "\n";
-			print STDERR $message;
-			exit;
-		}
-	}
-	else {
-		# Try to create a new link there - may fail if on different filesystem
-		verbose('Creating link');
-		my $result = link $full_filepath, $target_full_path;
-		if ($result) {
-			verbose('Link created');
-		}
-		else {
-			my $message = 'Unable to create link to target location. ';
-			$message .= 'Is it the same FS?: ' . $target_full_path . "\n";
-			print STDERR $message;
-			exit;
-		}
-	}
+	do_hardlink($target_full_path, $full_filepath);
 }
 
 sub usage {
@@ -119,6 +92,82 @@ sub verbose {
 	my ($message) = @_;
 	if ($verbose) {
 		print $message . "\n";
+	}
+	return;
+}
+
+sub do_hardlink {
+	my ($target_path, $origin_path) = @_;
+	verbose('Starting hardlink file logic');
+	# See if the file already exists
+	if ( -e $target_path) {
+		# The file already exists, but don't panic yet, it might be the same
+		#  inode in which case we don't have to do anything
+		if ((stat $target_path)[1] == (stat $origin_path)[1]) {
+			# Same inode
+			verbose('Files are already the same inode - no moving to do');
+		}
+		else {
+			my $message = 'A file already exists at the target location: ';
+			$message .= $target_path;
+			croak($message);
+		}
+	}
+	else {
+		# Try to create a new link there - may fail if on different filesystem
+		verbose('Creating link');
+		my $result = link $origin_path, $target_path;
+		if ($result) {
+			verbose('Link created');
+		}
+		else {
+			my $message = $OS_ERROR . "\n";
+			$message .= 'Unable to create link to target location. ';
+			$message .= 'Is it the same FS?: ' . $target_path;
+			croak($message);
+		}
+	}
+	return;
+}
+
+sub do_move {
+	my ($target_path, $origin_path) = @_;
+	verbose('Starting move file logic');
+	# See if the file already exists
+	if ( -e $target_path) {
+		# The file already exists, but don't panic yet, it might be the same
+		#  inode in which case we simply move the original
+		if ((stat $target_path)[1] == (stat $origin_path)[1]) {
+			# Same inode - remove original
+			verbose('Target exists as same file - Removing original');
+			my $result = unlink $origin_path;
+			if ($result) {
+				verbose('Original removed');
+			}
+			else {
+				my $message = $OS_ERROR . "\n";
+				$message .= 'Unable to remove original file: '. $target_path;
+				croak($message);
+			}
+		}
+		else {
+			my $message = 'A file already exists at the target location: ';
+			$message .= $target_path . "\n";
+			croak($message);
+		}
+	}
+	else {
+		# Try to move the file
+		verbose('Moving file');
+		my $result = move($origin_path, $target_path);
+		if ($result) {
+			verbose('File moved');
+		}
+		else {
+			my $message = $OS_ERROR . "\n";
+			$message .= 'Unable to move file to destination: '. $target_path;
+			croak($message);
+		}
 	}
 	return;
 }
