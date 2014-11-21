@@ -9,11 +9,10 @@ use File::Path qw(make_path);
 use File::Copy;
 use Carp;
 use English qw(-no_match_vars);
+use Config::Tiny;
+use Cwd;
 
-# @todo: Move these to a config file
-my $base_tv_dir   = '/tmp/TV';
-my $unwatched_dir = '/tmp/unwatched';
-# End config
+my $dir_sep = q{/};
 
 # Initialise command line options to default
 my $move_file        = 0;
@@ -21,12 +20,14 @@ my $hardlink_file    = 0;
 my $add_to_unwatched = 0;
 my $filename         = undef;
 my $verbose          = 0;
+my $config_file      = undef;
 
 GetOptions(
 	'move-file'        => \$move_file,
 	'hardlink-file'    => \$hardlink_file,
 	'add-to-unwatched' => \$add_to_unwatched,
-	'verbose'          => \$verbose
+	'verbose'          => \$verbose,
+	'configuration=s'  => \$config_file,
 );
 
 $filename = shift @ARGV;
@@ -35,6 +36,17 @@ $filename = shift @ARGV;
 if (( ! $move_file && ! $hardlink_file) || ! $filename) {
 	usage();
 	exit;
+}
+
+my $config = get_configuration($config_file);
+
+my $base_tv_dir   = $config->{_}->{base_tv_dir};
+my $unwatched_dir = $config->{_}->{unwatched_dir};
+
+
+# Check config
+if ( ! $base_tv_dir || ! $unwatched_dir) {
+	croak('Invalid configuration');
 }
 
 verbose('Resolving filename');
@@ -85,6 +97,26 @@ Move the given filename to the correct folder (and add a symlink to the unwatche
 tv-management --hardlink-file [--add-to-unwatched] filename
 
 Hardlink the given filename to the correct folder (and add a symlink to the unwatched folder)
+
+Additional options:
+
+  --verbose
+    Display verbose debugging output
+
+  --configuration filename
+    Use the specified configuration. If omitted, will look for a file called .tv-management.ini in the current directory
+	or the user's home folder
+
+Configuration:
+
+  A simple ini file with the following settings
+
+  base_tv_dir
+    The directory where TV shows are permanently stored
+
+  unwatched_dir
+    A directory that new TV shows are symlinked to.
+
 _END_USAGE_
 
 	print $usage;
@@ -185,7 +217,6 @@ sub add_to_unwatched {
 	verbose('Calculated relative path as ' . $relative_path);
 
 	verbose('Creating symlink');
-	my $dir_sep = q{/};
 	my $symlink_filename = $unwatched_dir . $dir_sep . $link_filename;
 
 	my $result = symlink $relative_path, $symlink_filename;
@@ -196,6 +227,38 @@ sub add_to_unwatched {
 		my $message = $OS_ERROR . "\n";
 		$message .= 'Unable to create symlink: ' . $symlink_filename;
 		croak($message);
+	}
+	return;
+}
+
+sub get_configuration {
+	my ($conf_file) = @_;
+	if ( ! defined $conf_file) {
+		$conf_file = get_default_config_file();
+		if ( ! defined $conf_file) {
+			my $message = 'Unable to find a config file to use';
+			usage();
+			croak($message);
+		}
+	}
+	verbose('Using config file: ' . $conf_file);
+
+	return Config::Tiny->read($conf_file);
+}
+
+sub get_default_config_file {
+	verbose('Determining default config file');
+	my $default_filename = '.tv-management.ini';
+	# We default to current_dir/.tv-management.ini
+	# Then ~/.tv-management.ini
+	my $dir = getcwd;
+	my @files_to_test;
+	push @files_to_test, $dir . $dir_sep . $default_filename;
+	push @files_to_test, $ENV{HOME} . $dir_sep . $default_filename;
+	for my $filename (@files_to_test) {
+		if ( -e $filename) {
+			return $filename;
+		}
 	}
 	return;
 }
