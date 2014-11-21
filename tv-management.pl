@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Getopt::Long;
-use TV::Renamer;
 use File::Spec;
 use File::Basename;
 use File::Path qw(make_path);
@@ -11,6 +10,9 @@ use Carp;
 use English qw(-no_match_vars);
 use Config::Tiny;
 use Cwd;
+
+use lib dirname(__FILE__);
+use TV::Renamer;
 
 my $dir_sep = q{/};
 
