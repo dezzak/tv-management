@@ -123,7 +123,7 @@ sub process_fully_seeded {
         ids => ($torrent->id),
         delete_local_data => 0,
     );
-    $client->remove();
+    $client->remove(%params);
 
     return;
 }
