@@ -42,6 +42,33 @@ my @test_files = (
 		expected_filename => 'Waterloo Road 10x04.mp4',
 		expected_dir      => '/foo/bar/Waterloo Road/Waterloo Road 10x/',
 	},
+	{
+		filename          => 'White.Collar.S06E03.720p.HDTV.x264-KILLERS.mkv',
+		programme_name    => 'White Collar',
+		series            => 6,
+		episode           => 3,
+		episode_title     => undef,
+		expected_filename => 'White Collar 6x03.mkv',
+		expected_dir      => '/foo/bar/White Collar/White Collar 6x/',
+	},
+	{
+		filename          => 'The.Mentalist.S06E18.720p.HDTV.X264-DIMENSION.mkv',
+		programme_name    => 'The Mentalist',
+		series            => 6,
+		episode           => 18,
+		episode_title     => undef,
+		expected_filename => 'The Mentalist 6x18.mkv',
+		expected_dir      => '/foo/bar/The Mentalist/The Mentalist 6x/',
+	},
+	{
+		filename          => 'Greys.Anatomy.S11E07.720p.HDTV.X264-DIMENSION.mkv',
+		programme_name    => "Grey's Anatomy",
+		series            => 11,
+		episode           => 7,
+		episode_title     => undef,
+		expected_filename => "Grey's Anatomy 11x07.mkv",
+		expected_dir      => "/foo/bar/Grey's Anatomy/Grey's Anatomy 11x/",
+	},
 );
 
 my $config_ref = {
