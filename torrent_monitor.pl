@@ -115,7 +115,7 @@ sub process_fully_seeded {
         }
         $command .= q{ "} . $file . q{"};
         verbose('Running following command: ' . $command);
-        # system $command;
+        system $command;
     }
 
     # Then remove the torrent
@@ -149,7 +149,7 @@ sub process_downloaded {
         }
         $command .= q{ "} . $file . q{"};
         verbose('Running following command: ' . $command);
-        # system $command;
+        system $command;
     }
 
     return;
