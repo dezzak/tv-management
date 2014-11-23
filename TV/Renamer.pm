@@ -91,6 +91,16 @@ sub get_programme_info {
         return $self->_get_iplayer_programme_info($filename);
     }
 
+    if ($filename =~ m{
+            S     # The letter S
+            \d{2} # Two digits
+            E     # The letter E
+            \d{2} # Two digits
+        }xms
+    ) {
+        return $self->_get_torrent_programme_info($filename);
+    }
+
     return;
 }
 
@@ -153,12 +163,64 @@ sub _get_iplayer_programme_info {
     return $programme_info_ref;
 }
 
+sub _get_torrent_programme_info {
+    my ($self, $filename) = @_;
+
+    my $programme_name;
+    my $series;
+    my $episode;
+    my $episode_title;
+    my $extension = $self->_get_extension($filename);
+
+    if ($filename =~ m{
+        \A       # The start of the filename
+        (.*)     # Capture all characters
+        s        # Up to the letter s
+        (\d+)    # The capture 1 or more digits
+        e        # Then the letter e
+        (\d{2,}) # Then 2 or more digits
+        }xmsi
+    ) {
+        my $captured_name    = $1;
+        my $captured_series  = $2;
+        my $captured_episode = $3;
+
+        # Replace dots with spaces
+        $captured_name =~ s/\./ /xmsg;
+        # and trim
+        $captured_name =~ s/\A\s+//xms;
+        $captured_name =~ s/\s+\Z//xms;
+
+        $programme_name = $captured_name;
+
+        # Remove leading zeros from series and episodes
+        $series = $self->_to_number($captured_series);
+        $episode = $self->_to_number($captured_episode);
+    }
+    else {
+        verbose("Couldn't process $filename");
+    }
+
+    # Special case - Grey's Anatomy - add apostrophe
+    if ($programme_name eq 'Greys Anatomy') {
+        $programme_name = "Grey's Anatomy";
+    }
+
+    my $programme_info_ref = {};
+    $programme_info_ref->{programme_name} = $programme_name;
+    $programme_info_ref->{series} = $series;
+    $programme_info_ref->{episode} = $episode;
+    $programme_info_ref->{episode_title} = $episode_title;
+
+    return $programme_info_ref;
+}
+
 sub _get_extension {
     my ($self, $filename) = @_;
 
     my $extension = q();
 
-    if ($filename =~ /default(\.[\w]{3})$/) {
+    if ($filename =~ /(\.[\w]{3})$/) {
         $extension = $1;
     }
 
@@ -177,6 +239,14 @@ sub _init_base_directory {
     }
 
     return;
+}
+
+sub _to_number {
+    my ($self, $string) = @_;
+
+    $string =~ s/\A0+//xms;
+
+    return int $string;
 }
 
 1;
