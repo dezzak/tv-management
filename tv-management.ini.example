@@ -2,3 +2,9 @@ base_tv_dir=/tmp/TV
 unwatched_dir=/tmp/unwatched
 tv_manager_path=/usr/local/bin/tv-management.pl
 iplayer_dir=/tmp/iplayer
+
+[transmission]
+rpc_url=http://localhost:9091/transmission/rpc
+rpc_username=transmission
+rpc_password=password
+rpc_timeout=5
