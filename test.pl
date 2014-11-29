@@ -69,6 +69,15 @@ my @test_files = (
 		expected_filename => "Grey's Anatomy 11x07.mkv",
 		expected_dir      => "/foo/bar/Grey's Anatomy/Grey's Anatomy 11x/",
 	},
+	{
+		filename          => 'white.collar.s05e06.720p.hdtv.x264-killers.mkv',
+		programme_name    => "White Collar",
+		series            => 5,
+		episode           => 6,
+		episode_title     => undef,
+		expected_filename => "White Collar 5x06.mkv",
+		expected_dir      => "/foo/bar/White Collar/White Collar 5x/",
+	},
 );
 
 my $config_ref = {
@@ -86,7 +95,10 @@ foreach my $test_ref (@test_files) {
 		next if ($key eq 'expected_dir');
 
 		if (defined($test_ref->{$key})) {
-			if ($test_ref->{$key} ne $info->{$key}) {
+			if (
+				! defined($info->{$key})
+				|| $test_ref->{$key} ne $info->{$key}
+			) {
 				$pass = 0;
 			}
 		}
@@ -104,9 +116,13 @@ foreach my $test_ref (@test_files) {
 	}
 
 	my $given_dir = $renamer->get_destination_directory_from_file($test_ref->{filename});
-	if ($given_dir ne $test_ref->{expected_dir}) {
+	if (
+		! defined($given_dir)
+		|| $given_dir ne $test_ref->{expected_dir}
+	) {
 		$pass = 0;
-		print '[FAIL] ' . $given_dir . "\n";
+		print "[FAIL] With destination dir:\n";
+		print Dumper($given_dir);
 	}
 
 	if ($pass) {

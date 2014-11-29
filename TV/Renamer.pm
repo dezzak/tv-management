@@ -96,7 +96,7 @@ sub get_programme_info {
             \d{2} # Two digits
             E     # The letter E
             \d{2} # Two digits
-        }xms
+        }xmsi
     ) {
         return $self->_get_torrent_programme_info($filename);
     }
@@ -191,7 +191,7 @@ sub _get_torrent_programme_info {
         $captured_name =~ s/\A\s+//xms;
         $captured_name =~ s/\s+\Z//xms;
 
-        $programme_name = $captured_name;
+        $programme_name = ucwords($captured_name, q{ });
 
         # Remove leading zeros from series and episodes
         $series = $self->_to_number($captured_series);
@@ -247,6 +247,12 @@ sub _to_number {
     $string =~ s/\A0+//xms;
 
     return int $string;
+}
+
+sub ucwords {
+    my($new, $delim) = @_;
+    $new =~ s/($delim|^)(.*?)(?=$delim|$)/$1\u\L$2/sg;
+    $new;
 }
 
 1;
