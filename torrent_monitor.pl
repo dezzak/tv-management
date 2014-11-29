@@ -121,7 +121,7 @@ sub process_fully_seeded {
     # Then remove the torrent
     my %params = (
         ids => ($torrent->id),
-        delete_local_data => 0,
+        delete_local_data => 1,
     );
     $client->remove(%params);
 
