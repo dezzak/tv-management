@@ -221,6 +221,11 @@ sub add_to_unwatched {
 	verbose('Creating symlink');
 	my $symlink_filename = $unwatched_dir . $dir_sep . $link_filename;
 
+	if (-e $symlink_filename) {
+		verbose('link already exists');
+		return;
+	}
+
 	my $result = symlink $relative_path, $symlink_filename;
 	if ($result) {
 		verbose('link created');
