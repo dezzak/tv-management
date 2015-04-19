@@ -192,6 +192,11 @@ sub _get_torrent_programme_info {
         $captured_name =~ s/\s+\Z//xms;
 
         $programme_name = ucwords($captured_name, q{ });
+        # Don't allow ucwords for some words though...
+        my @always_lowercase = ('of');
+        foreach my $word (@always_lowercase) {
+            $programme_name =~ s/\b$word\b/$word/xmis;
+        }
 
         # Remove leading zeros from series and episodes
         $series = $self->_to_number($captured_series);

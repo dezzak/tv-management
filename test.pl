@@ -78,6 +78,15 @@ my @test_files = (
 		expected_filename => "White Collar 5x06.mkv",
 		expected_dir      => "/foo/bar/White Collar/White Collar 5x/",
 	},
+	{
+		filename          => 'Game.of.Thrones.S05E01.HDTV.x264-Xclusive.mp4',
+		programme_name    => "Game of Thrones",
+		series            => 5,
+		episode           => 1,
+		episode_title     => undef,
+		expected_filename => "Game of Thrones 5x01.mp4",
+		expected_dir      => "/foo/bar/Game of Thrones/Game of Thrones 5x/",
+	},
 );
 
 my $config_ref = {
