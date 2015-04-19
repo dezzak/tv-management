@@ -184,6 +184,8 @@ sub get_eligible_files {
             \.      # A dot
             (
                 mkv # Then the letters mkv
+                |   # Or..
+                mp4 # The letters mp4
             )
             \Z      # Then the end of string
             }xms
