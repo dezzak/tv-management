@@ -41,7 +41,7 @@ while (my $file = readdir D) {
         if (defined $config_file) {
             $command .= ' --configuration ' . $config_file;
         }
-        $command .= q{ } . $iplayer_dir . $dir_sep . $file;
+        $command .= sprintf ' "%s"', $iplayer_dir . $dir_sep . $file;
         verbose('Running following command: ' . $command);
         system $command;
     }
