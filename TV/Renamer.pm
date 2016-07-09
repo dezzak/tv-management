@@ -127,7 +127,7 @@ sub _get_iplayer_programme_info {
     }
     # Chop the dull stuff off the end
     my $endpart = $filename_parts[1];
-    $endpart =~ s/\_[\w]{8}\_default$extension//;
+    $endpart =~ s/\_[\w]{8}\_(default|original)$extension//;
 
     if ($endpart =~ /^Episode\_([\d]+)(.*)/) {
         # We have an Episode x format
