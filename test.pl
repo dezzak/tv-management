@@ -92,7 +92,7 @@ my @test_files = (
 		programme_name    => 'Question Time',
 		series            => undef,
 		episode           => undef,
-		episode_title     => undef,
+		episode_title     => '2017-09-28',
 		expected_filename => 'Question Time - 2017-09-28.mp4',
 		expected_dir      => '/foo/bar/Question Time/2017/',
 	}

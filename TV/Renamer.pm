@@ -34,6 +34,8 @@ sub get_destination_directory_from_file {
     if (defined($programme_info_ref->{series})) {
         $destination_directory .= q{/} . $programme_info_ref->{programme_name};
         $destination_directory .= q{ } . $programme_info_ref->{series} . 'x';
+    } elsif ($filename =~ /(\d{4})-\d\d-\d\d/) {
+        $destination_directory .= q{/} . $1;
     }
 
     return $destination_directory . q{/};
