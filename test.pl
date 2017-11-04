@@ -71,22 +71,31 @@ my @test_files = (
 	},
 	{
 		filename          => 'white.collar.s05e06.720p.hdtv.x264-killers.mkv',
-		programme_name    => "White Collar",
+		programme_name    => 'White Collar',
 		series            => 5,
 		episode           => 6,
 		episode_title     => undef,
-		expected_filename => "White Collar 5x06.mkv",
-		expected_dir      => "/foo/bar/White Collar/White Collar 5x/",
+		expected_filename => 'White Collar 5x06.mkv',
+		expected_dir      => '/foo/bar/White Collar/White Collar 5x/',
 	},
 	{
 		filename          => 'Game.of.Thrones.S05E01.HDTV.x264-Xclusive.mp4',
-		programme_name    => "Game of Thrones",
+		programme_name    => 'Game of Thrones',
 		series            => 5,
 		episode           => 1,
 		episode_title     => undef,
-		expected_filename => "Game of Thrones 5x01.mp4",
-		expected_dir      => "/foo/bar/Game of Thrones/Game of Thrones 5x/",
+		expected_filename => 'Game of Thrones 5x01.mp4',
+		expected_dir      => '/foo/bar/Game of Thrones/Game of Thrones 5x/',
 	},
+	{
+		filename          => 'Question_Time_-_2017-09-28_b096gxvg_original.mp4',
+		programme_name    => 'Question Time',
+		series            => undef,
+		episode           => undef,
+		episode_title     => undef,
+		expected_filename => 'Question Time - 2017-09-28.mp4',
+		expected_dir      => '/foo/bar/Question Time/2017/Question Time - 2017-09-28.mp4',
+	}
 );
 
 my $config_ref = {
