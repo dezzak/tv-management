@@ -38,7 +38,8 @@ while (my $file = readdir D) {
         my $command = $tv_manager
                     . ' --move-file'
                     . ' --add-to-unwatched';
-        if ($verbose) {
+        # temporarily always verbose for this command
+        if (1) {
             $command .= ' --verbose';
         }
         if (defined $config_file) {
