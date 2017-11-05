@@ -178,20 +178,9 @@ sub do_move {
         verbose('File already exists at target path - trying to deduplicate');
         return deduplicate_files( $target_path, $origin_path );
     }
-    else {
-        # Try to move the file
-        verbose('Moving file');
-        my $result = move( $origin_path, $target_path );
-        if ($result) {
-            verbose('File moved');
-        }
-        else {
-            my $message = $OS_ERROR . "\n";
-            $message .= 'Unable to move file to destination: ' . $target_path;
-            croak($message);
-        }
-    }
-    return;
+    # Try to move the file
+    verbose('Moving file');
+    return move_file($origin_path, $target_path);
 }
 
 sub deduplicate_files {
@@ -206,6 +195,13 @@ sub deduplicate_files {
         # Same inode - remove original
         verbose('Target exists as same file - Removing original');
         return remove_file($origin_path);
+    }
+
+    my $modify_time_difference = $origin_details[9] - $target_details[9];
+    verbose('modify time difference: ' . $modify_time_difference . 's');
+    if ($modify_time_difference < 300) {
+        verbose('Modification time difference is < 5mins, continuing with move');
+        return move_file($origin_path, $target_path);
     }
     my $message = 'A file already exists at the target location: ';
     $message .= $target_path . "\n";
@@ -224,6 +220,22 @@ sub remove_file {
         $message .= 'Unable to remove file: ' . $path;
         croak($message);
     }
+    return;
+}
+
+sub move_file {
+    my ( $origin_path, $target_path ) = @_;
+    verbose('Moving ' . $origin_path . ' to ' . $target_path);
+    my $result = move( $origin_path, $target_path );
+    if ($result) {
+        verbose('File moved');
+    }
+    else {
+        my $message = $OS_ERROR . "\n";
+        $message .= 'Unable to move file to destination: ' . $target_path;
+        croak($message);
+    }
+    return;
 }
 
 sub add_to_unwatched {
