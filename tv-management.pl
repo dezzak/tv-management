@@ -172,26 +172,8 @@ sub do_move {
 	verbose('Starting move file logic');
 	# See if the file already exists
 	if ( -e $target_path) {
-		# The file already exists, but don't panic yet, it might be the same
-		#  inode in which case we simply move the original
-		if ((stat $target_path)[1] == (stat $origin_path)[1]) {
-			# Same inode - remove original
-			verbose('Target exists as same file - Removing original');
-			my $result = unlink $origin_path;
-			if ($result) {
-				verbose('Original removed');
-			}
-			else {
-				my $message = $OS_ERROR . "\n";
-				$message .= 'Unable to remove original file: '. $target_path;
-				croak($message);
-			}
-		}
-		else {
-			my $message = 'A file already exists at the target location: ';
-			$message .= $target_path . "\n";
-			croak($message);
-		}
+		verbose('File already exists at target path - trying to deduplicate');
+		return deduplicate_files($target_path, $origin_path);
 	}
 	else {
 		# Try to move the file
@@ -207,6 +189,36 @@ sub do_move {
 		}
 	}
 	return;
+}
+
+sub deduplicate_files {
+	my ($target_path, $origin_path) = @_;
+	my @target_details = stat $target_path;
+	my @origin_details = stat $origin_path;
+	# The file already exists, but don't panic yet, it might be the same
+	#  inode in which case we simply move the original
+	if ($target_details[1] == $origin_details[1]) {
+		# Same inode - remove original
+		verbose('Target exists as same file - Removing original');
+		return remove_file($origin_path)
+	}
+	my $message = 'A file already exists at the target location: ';
+	$message .= $target_path . "\n";
+	croak($message);
+}
+
+sub remove_file {
+	my ($path) = @_;
+	verbose('Trying to remove file: ' . $path);
+	my $result = unlink $path;
+	if ($result) {
+		verbose('File removed');
+	}
+	else {
+		my $message = $OS_ERROR . "\n";
+		$message .= 'Unable to remove file: '. $path;
+		croak($message);
+	}
 }
 
 sub add_to_unwatched {
