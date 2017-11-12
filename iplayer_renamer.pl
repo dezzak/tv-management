@@ -24,25 +24,26 @@ my $tv_manager  = $config->{_}->{tv_manager_path};
 my $iplayer_dir = $config->{_}->{iplayer_dir};
 
 # Check config
-if ( ! $tv_manager || ! $iplayer_dir) {
+if ( !$tv_manager || !$iplayer_dir ) {
     croak('Invalid configuration');
 }
 
 my $result = opendir D, $iplayer_dir;
-if ( ! $result) {
-    croak('Failed to open iplayer directory: ' . $OS_ERROR);
+if ( !$result ) {
+    croak( 'Failed to open iplayer directory: ' . $OS_ERROR );
 }
-while (my $file = readdir D) {
-    if ($file =~ /(default|original|editorial)(\.flv|\.mp4)$/xms) {
-        verbose('Found file ' . $file);
-        my $command = $tv_manager
-                    . ' --move-file'
-                    . ' --add-to-unwatched';
-        if (defined $config_file) {
+while ( my $file = readdir D ) {
+    if ( $file =~ /(default|original|editorial)(\.flv|\.mp4)$/xms ) {
+        verbose( 'Found file ' . $file );
+        my $command = $tv_manager . ' --move-file' . ' --add-to-unwatched';
+        if ($verbose) {
+            $command .= ' --verbose';
+        }
+        if ( defined $config_file ) {
             $command .= ' --configuration ' . $config_file;
         }
         $command .= sprintf ' "%s"', $iplayer_dir . $dir_sep . $file;
-        verbose('Running following command: ' . $command);
+        verbose( 'Running following command: ' . $command );
         system $command;
     }
 }
@@ -93,15 +94,15 @@ sub verbose {
 
 sub get_configuration {
     my ($conf_file) = @_;
-    if ( ! defined $conf_file) {
+    if ( !defined $conf_file ) {
         $conf_file = get_default_config_file();
-        if ( ! defined $conf_file) {
+        if ( !defined $conf_file ) {
             my $message = 'Unable to find a config file to use';
             usage();
             croak($message);
         }
     }
-    verbose('Using config file: ' . $conf_file);
+    verbose( 'Using config file: ' . $conf_file );
 
     return Config::Tiny->read($conf_file);
 }
@@ -109,6 +110,7 @@ sub get_configuration {
 sub get_default_config_file {
     verbose('Determining default config file');
     my $default_filename = '.tv-management.ini';
+
     # We default to current_dir/.tv-management.ini
     # Then ~/.tv-management.ini
     my $dir = getcwd;
@@ -116,7 +118,7 @@ sub get_default_config_file {
     push @files_to_test, $dir . $dir_sep . $default_filename;
     push @files_to_test, $ENV{HOME} . $dir_sep . $default_filename;
     for my $filename (@files_to_test) {
-        if ( -e $filename) {
+        if ( -e $filename ) {
             return $filename;
         }
     }
