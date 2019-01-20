@@ -43,6 +43,15 @@ my @test_files = (
 		expected_dir      => '/foo/bar/Waterloo Road/Waterloo Road 10x/',
 	},
 	{
+		filename          => 'Waterloo_Road_Series_10_-_Episode_04_b04nyk9y_default.mp4',
+		programme_name    => 'Waterloo Road',
+		series            => 10,
+		episode           => 4,
+		episode_title     => undef,
+		expected_filename => 'Waterloo Road 10x04.mp4',
+		expected_dir      => '/foo/bar/Waterloo Road/Waterloo Road 10x/',
+	},
+	{
 		filename          => 'White.Collar.S06E03.720p.HDTV.x264-KILLERS.mkv',
 		programme_name    => 'White Collar',
 		series            => 6,

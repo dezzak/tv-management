@@ -133,7 +133,7 @@ sub _get_iplayer_programme_info {
 
     if ($endpart =~ /^Episode\_([\d]+)(.*)/) {
         # We have an Episode x format
-        $episode = $1;
+        $episode = int $1;
         $episode =~ s/^Episode\_//;
         if ($2) {
             $episode_title = $2;
