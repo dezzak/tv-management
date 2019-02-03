@@ -104,6 +104,15 @@ my @test_files = (
 		episode_title     => '2017-09-28',
 		expected_filename => 'Question Time - 2017-09-28.mp4',
 		expected_dir      => '/foo/bar/Question Time/2017/',
+	},
+	{
+		filename          => 'Call_the_Midwife_Series_8_-_03._Episode_3_b0c1x6qn_original.mp4',
+		programme_name    => 'Call the Midwife',
+		series            => 8,
+		episode           => 3,
+		episode_title     => 'Episode 3',
+		expected_filename => 'Call the Midwife 8x03 - Episode 3.mp4',
+		expected_dir      => '/foo/bar/Call the Midwife/Call the Midwife 8x/',
 	}
 );
 

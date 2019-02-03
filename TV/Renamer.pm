@@ -141,7 +141,7 @@ sub _get_iplayer_programme_info {
     }
     elsif ($endpart =~ /^([\d]+)\.(.*)/) {
         # We have a x. format
-        $episode = $1;
+        $episode = int $1;
         if ($2) {
             $episode_title = $2;
         }
@@ -155,7 +155,6 @@ sub _get_iplayer_programme_info {
         $episode_title =~ s/\_/ /g;
         $episode_title =~ s/^\ //g;
     }
-
 
     $programme_info_ref->{programme_name} = $programme_name;
     $programme_info_ref->{series} = $series;
