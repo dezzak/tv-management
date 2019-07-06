@@ -63,9 +63,11 @@ sub get_normalised_filename {
         $normalised_name .= $episode;
     }
 
-    if (defined($programme_info_ref->{episode_title})) {
+    if (length $programme_info_ref->{episode_title}) {
         $normalised_name .= " - " . $programme_info_ref->{episode_title};
     }
+    # Remove trailing spaces
+    $normalised_name =~ s/ $//g;
 
     my $extension = $self->_get_extension($filename);
     $normalised_name .= $extension;
@@ -129,7 +131,7 @@ sub _get_iplayer_programme_info {
     }
     # Chop the dull stuff off the end
     my $endpart = $filename_parts[1];
-    $endpart =~ s/\_[\w]{8}\_(default|original|editorial)$extension//;
+    $endpart =~ s/\_[\w]{8}\_(default|original|editorial|technical)[0-9]?$extension//;
 
     if ($endpart =~ /^Episode\_([\d]+)(.*)/) {
         # We have an Episode x format

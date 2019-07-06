@@ -113,6 +113,15 @@ my @test_files = (
 		episode_title     => 'Episode 3',
 		expected_filename => 'Call the Midwife 8x03 - Episode 3.mp4',
 		expected_dir      => '/foo/bar/Call the Midwife/Call the Midwife 8x/',
+	},
+	{
+		filename          => 'Harry_Potter_A_History_of_Magic_-__b09d5n6b_original3.mp4',
+		programme_name    => 'Harry Potter A History of Magic',
+		series            => undef,
+		episode           => undef,
+		episode_title     => q{},
+		expected_filename => 'Harry Potter A History of Magic.mp4',
+		expected_dir      => '/foo/bar/Harry Potter A History of Magic/',
 	}
 );
 

@@ -33,7 +33,7 @@ if ( !$result ) {
     croak( 'Failed to open iplayer directory: ' . $OS_ERROR );
 }
 while ( my $file = readdir D ) {
-    if ( $file =~ /(default|original|editorial)(\.flv|\.mp4)$/xms ) {
+    if ( $file =~ /(default|original|editorial|technical)[0-9]?(\.flv|\.mp4)$/xms ) {
         verbose( 'Found file ' . $file );
         my $command = $tv_manager . ' --move-file' . ' --add-to-unwatched';
         if ($verbose) {
