@@ -10,7 +10,6 @@ use Carp;
 use English qw(-no_match_vars);
 use Config::Tiny;
 use Cwd;
-use Scalar::Util::Numeric qw(isint);
 
 use lib dirname(__FILE__);
 use TV::Renamer;
