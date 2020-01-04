@@ -312,13 +312,13 @@ sub set_file_permissions {
     if ( !isint($mode) ) {
         $mode = oct($mode);
     }
-    my $result = chmod $mode, $filename;
+    my $result = chmod $mode, $file;
     if ($result) {
         verbose('Mode changed');
     }
     else {
         my $message = $OS_ERROR . "\n";
-        $message .= 'Unable to change mode of ' . $filename;
+        $message .= 'Unable to change mode of ' . $file;
         croak($message);
     }
     return;
