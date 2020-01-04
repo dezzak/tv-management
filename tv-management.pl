@@ -308,10 +308,7 @@ sub set_file_permissions {
     my ( $file ) = @_;
 
     verbose('Changing mode of ' . $file);
-    my $mode = $config->{_}->{file_permissions} || 0644;
-    if ( !isint($mode) ) {
-        $mode = oct($mode);
-    }
+    my $mode = oct($config->{_}->{file_permissions}) || 0644;
     my $result = chmod $mode, $file;
     if ($result) {
         verbose('Mode changed');
