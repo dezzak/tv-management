@@ -80,10 +80,12 @@ make_path($target_directory);
 if ($move_file) {
     do_move( $target_full_path, $full_filepath );
     set_file_permissions( $target_full_path );
+    set_age_restrictions( $target_full_path );
 }
 elsif ($hardlink_file) {
     do_hardlink( $target_full_path, $full_filepath );
     set_file_permissions( $target_full_path );
+    set_age_restrictions( $target_full_path );
 }
 
 if ($add_to_unwatched) {
@@ -318,4 +320,31 @@ sub set_file_permissions {
         croak($message);
     }
     return;
+}
+
+sub set_age_restrictions {
+    my ( $file ) = @_;
+
+    my $age_group = get_age_restriction($file);
+
+    verbose('Changing group on ' . $file . ' to ' . $age_group);
+    my $gid = getgrnam($age_group);
+    if ( $gid == q{} ) {
+        croak('Unable to find group ' . $age_group);
+    }
+
+    my $result = chown -1, $gid, $file;
+    if ($result) {
+        verbose('Group changed');
+    }
+    else {
+        my $message = $OS_ERROR . "\n";
+        $message .= 'Unable to change group of ' . $file;
+        croak($message);
+    }
+    return;
+}
+
+sub get_age_restriction {
+    return 'age-unknown';
 }
