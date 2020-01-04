@@ -10,6 +10,7 @@ use Carp;
 use English qw(-no_match_vars);
 use Config::Tiny;
 use Cwd;
+use Scalar::Util::Numeric qw(isint);
 
 use lib dirname(__FILE__);
 use TV::Renamer;
@@ -79,9 +80,11 @@ make_path($target_directory);
 # What do we want to do?
 if ($move_file) {
     do_move( $target_full_path, $full_filepath );
+    set_file_permissions( $target_full_path );
 }
 elsif ($hardlink_file) {
     do_hardlink( $target_full_path, $full_filepath );
+    set_file_permissions( $target_full_path );
 }
 
 if ($add_to_unwatched) {
@@ -297,6 +300,26 @@ sub get_default_config_file {
         if ( -e $filename ) {
             return $filename;
         }
+    }
+    return;
+}
+
+sub set_file_permissions {
+    my ( $file ) = @_;
+
+    verbose('Changing mode of ' . $file);
+    my $mode = $config->{_}->{file_permissions} || 0644;
+    if ( !isint($mode) ) {
+        $mode = oct($mode);
+    }
+    my $result = chmod $mode, $filename;
+    if ($result) {
+        verbose('Mode changed');
+    }
+    else {
+        my $message = $OS_ERROR . "\n";
+        $message .= 'Unable to change mode of ' . $filename;
+        croak($message);
     }
     return;
 }
