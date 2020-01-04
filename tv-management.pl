@@ -329,7 +329,7 @@ sub set_age_restrictions {
 
     verbose('Changing group on ' . $file . ' to ' . $age_group);
     my $gid = getgrnam($age_group);
-    if ( $gid == q{} ) {
+    if ( $gid eq q{} ) {
         croak('Unable to find group ' . $age_group);
     }
 
