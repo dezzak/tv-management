@@ -122,6 +122,24 @@ my @test_files = (
 		episode_title     => q{},
 		expected_filename => 'Harry Potter A History of Magic.mp4',
 		expected_dir      => '/foo/bar/Harry Potter A History of Magic/',
+	},
+	{
+		filename          => 'Example_Programme_-__b012d345_legal.mp4',
+		programme_name    => 'Example Programme',
+		series            => undef,
+		episode           => undef,
+		episode_title     => q{},
+		expected_filename => 'Example Programme.mp4',
+		expected_dir      => '/foo/bar/Example Programme/',
+	},
+	{
+		filename          => 'Example_Programme_-__b012d345_iplayer.mp4',
+		programme_name    => 'Example Programme',
+		series            => undef,
+		episode           => undef,
+		episode_title     => q{},
+		expected_filename => 'Example Programme.mp4',
+		expected_dir      => '/foo/bar/Example Programme/',
 	}
 );
 
