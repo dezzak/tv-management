@@ -38,7 +38,7 @@ sub get_destination_directory_from_file {
         $destination_directory .= q{/} . $1;
     }
 
-    return $destination_directory . q{/};
+    return $self->_custom_destination_directory($destination_directory, $programme_info_ref) . q{/};
 }
 
 sub get_normalised_filename {
@@ -163,7 +163,7 @@ sub _get_iplayer_programme_info {
     $programme_info_ref->{episode} = $episode;
     $programme_info_ref->{episode_title} = $episode_title;
 
-    return $programme_info_ref;
+    return $self->_custom_get_iplayer_data($filename, $programme_info_ref);
 }
 
 sub _get_torrent_programme_info {
@@ -261,6 +261,60 @@ sub ucwords {
     my($new, $delim) = @_;
     $new =~ s/($delim|^)(.*?)(?=$delim|$)/$1\u\L$2/sg;
     $new;
+}
+
+sub _custom_get_iplayer_data {
+    my ($self, $filename, $existing_data) = @_;
+    if ($self->_should_apply_custom_gardeners_world_data($existing_data)) {
+        return $self->_apply_custom_gardeners_world_data($existing_data)
+    }
+    return $existing_data;
+}
+
+sub _should_apply_custom_gardeners_world_data {
+    my ($self, $existing_data) = @_;
+    return $existing_data->{programme_name} =~ /^Gardeners World 20\d\d/;
+}
+
+sub _apply_custom_gardeners_world_data {
+    my ($self, $existing_data) = @_;
+
+    if ($existing_data->{programme_name} =~ /^Gardeners World (20\d\d)/) {
+        my $year = int $1;
+        $existing_data->{series} = $year - 1967;
+        $existing_data->{programme_name} = "Gardeners World";
+    }
+
+    return $existing_data;
+}
+
+sub _custom_destination_directory {
+    my ($self, $generated_directory, $programme_data) = @_;
+
+    if ($self->_should_apply_custom_gardeners_world_directory($programme_data)) {
+        return $self->_apply_custom_gardeners_world_directory($programme_data)
+    }
+
+    return $generated_directory;
+}
+
+sub _should_apply_custom_gardeners_world_directory {
+    my ($self, $existing_data) = @_;
+    return $existing_data->{programme_name} eq "Gardeners World";
+}
+
+sub _apply_custom_gardeners_world_directory {
+    my ($self, $programme_data) = @_;
+
+    my $destination_directory = $self->{config_ref}->{tv_base_directory};
+
+    $destination_directory .= "/Gardener's World";
+
+    if (defined($programme_data->{series})) {
+        $destination_directory .= q{/} . $programme_data->{series} . 'x';
+    }
+
+    return $destination_directory;
 }
 
 1;

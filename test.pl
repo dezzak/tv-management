@@ -140,6 +140,15 @@ my @test_files = (
 		episode_title     => q{},
 		expected_filename => 'Example Programme.mp4',
 		expected_dir      => '/foo/bar/Example Programme/',
+	},
+	{
+		filename          => 'Gardeners_World_2022_-_06._Episode_6_m0016drf_original.mp4',
+		programme_name    => 'Gardeners World',
+		series            => 55,
+		episode           => 6,
+		episode_title     => 'Episode 6',
+		expected_filename => 'Gardeners World 55x06 - Episode 6.mp4',
+		expected_dir      => '/foo/bar/Gardener\'s World/55x/',
 	}
 );
 
