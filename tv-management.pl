@@ -84,8 +84,6 @@ if ($move_file) {
 }
 elsif ($hardlink_file) {
     do_hardlink( $target_full_path, $full_filepath );
-    set_file_permissions( $target_full_path );
-    set_age_restrictions( $target_full_path );
 }
 
 if ($add_to_unwatched) {
