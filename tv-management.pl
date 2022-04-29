@@ -315,7 +315,7 @@ sub set_file_permissions {
     else {
         my $message = $OS_ERROR . "\n";
         $message .= 'Unable to change mode of ' . $file;
-        croak($message);
+        verbose($message);
     }
     return;
 }
