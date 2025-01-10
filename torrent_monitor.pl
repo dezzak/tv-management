@@ -142,7 +142,7 @@ sub process_downloaded {
         # @ todo there'll be a bug here in that every time this is run, a new symlink to unwatched will be created, even
         # if we've already watched it. Perhaps we need to keep a list of what we've put there
         my $command = $tv_manager
-                    . ' --hardlink-file'
+                    . ' --copy-file'
                     . ' --add-to-unwatched';
         if (defined $config_file) {
             $command .= ' --configuration ' . $config_file;

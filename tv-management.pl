@@ -19,6 +19,7 @@ my $dir_sep = q{/};
 # Initialise command line options to default
 my $move_file        = 0;
 my $hardlink_file    = 0;
+my $copy_file        = 0;
 my $add_to_unwatched = 0;
 my $filename         = undef;
 my $verbose          = 0;
@@ -27,6 +28,7 @@ my $config_file      = undef;
 GetOptions(
     'move-file'        => \$move_file,
     'hardlink-file'    => \$hardlink_file,
+    'copy-file'        => \$copy_file,
     'add-to-unwatched' => \$add_to_unwatched,
     'verbose'          => \$verbose,
     'configuration=s'  => \$config_file,
@@ -35,7 +37,7 @@ GetOptions(
 $filename = shift @ARGV;
 
 # Make sure that we can proceed
-if ( ( !$move_file && !$hardlink_file ) || !$filename ) {
+if ( ( !$move_file && !$hardlink_file && !$copy_file ) || !$filename ) {
     usage();
     exit;
 }
@@ -84,6 +86,11 @@ if ($move_file) {
 }
 elsif ($hardlink_file) {
     do_hardlink( $target_full_path, $full_filepath );
+}
+elsif ($copy_file) {
+    do_copy( $target_full_path, $full_filepath );
+    set_file_permissions( $target_full_path );
+    set_age_restrictions( $target_full_path );
 }
 
 if ($add_to_unwatched) {
@@ -183,6 +190,44 @@ sub do_move {
     # Try to move the file
     verbose('Moving file');
     return move_file($origin_path, $target_path);
+}
+
+sub do_copy {
+    my ( $target_path, $origin_path ) = @_;
+    verbose('Starting copy file logic');
+
+    # See if the file already exists
+    if ( -e $target_path ) {
+
+        # The file already exists, but don't panic yet, it might be the same
+        # file. We can lazily (inaccurately!) check this by checking the
+        # file size
+        if ( ( stat $target_path )[7] == ( stat $origin_path )[7] ) {
+
+            # Same file size
+            verbose('File already exists with the same size - no copying to do');
+        }
+        else {
+            my $message = 'A file already exists at the target location: ';
+            $message .= $target_path;
+            croak($message);
+        }
+    }
+    else {
+        # Try to copy the file there
+        verbose('Copying file');
+        my $result = copy($origin_path, $target_path);
+        if ($result) {
+            verbose('File copied');
+        }
+        else {
+            my $message = $OS_ERROR . "\n";
+            $message .= 'Unable to copy file from ';
+            $message .= $origin_path . ' to ' . $target_path;
+            croak($message);
+        }
+    }
+    return;
 }
 
 sub deduplicate_files {
