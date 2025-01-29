@@ -43,13 +43,20 @@ if ( ! $tv_manager) {
 
 # Check transmission specific config
 
-my $rpc_url      = $config->{transmission}->{rpc_url};
-my $rpc_username = $config->{transmission}->{rpc_username};
-my $rpc_password = $config->{transmission}->{rpc_password};
-my $rpc_timeout  = $config->{transmission}->{rpc_timeout};
+my $rpc_url            = $config->{transmission}->{rpc_url};
+my $rpc_username       = $config->{transmission}->{rpc_username};
+my $rpc_password       = $config->{transmission}->{rpc_password};
+my $rpc_timeout        = $config->{transmission}->{rpc_timeout};
+my $remote_mount_base  = $config->{transmission}->{remote_mount_base};
+my $local_mount_base   = $config->{transmission}->{local_mount_base};
+my $has_mount_override = 0;
 
 if ( ! $rpc_url || ! $rpc_username || ! $rpc_password) {
     croak('Invalid transmisison configuration');
+}
+
+if ( $remote_mount_base && $local_mount_base ) {
+    $has_mount_override = 1;
 }
 
 my $client = Transmission::Client->new(
@@ -161,6 +168,9 @@ sub get_eligible_files {
     my @eligible_files;
 
     my $torrent_base_dir = $torrent->download_dir;
+    if ( defined($has_mount_override) && $has_mount_override ) {
+        $torrent_base_dir =~ s|^\Q$remote_mount_base|$local_mount_base|
+    }
 
     my $files = $torrent->files;
     my @files = @{$files};
